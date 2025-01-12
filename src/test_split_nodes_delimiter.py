@@ -53,3 +53,34 @@ class TestSplitNodesDelimiter(unittest.TestCase):
         self.assertEqual(nodes[2].text, " today ")
         self.assertEqual(nodes[3].text, "is")
         self.assertEqual(nodes[4].text, " a good day")
+
+    def test_split_nodes_delimiter_nested_delimiters(self):
+        # Test with nested delimiters
+        node = TextNode("hello **world _today_ is** a good day", TextType.TEXT)
+        nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertEqual(len(nodes), 3)
+        self.assertEqual(nodes[0].text, "hello ")
+        self.assertEqual(nodes[1].text, "world _today_ is")
+        self.assertEqual(nodes[2].text, " a good day")
+    
+    def test_split_nodes_delimiter_nested_delimiters_reverse(self):
+        # Test with nested delimiters
+        node = TextNode("hello **world _today_ is** a good day", TextType.TEXT)
+        nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
+        self.assertEqual(len(nodes), 3)
+        self.assertEqual(nodes[0].text, "hello **world ")
+        self.assertEqual(nodes[1].text, "today")
+        self.assertEqual(nodes[2].text, " is** a good day")
+
+    def test_split_nodes_delimiter_unmatched(self):
+        node = TextNode("hello **world", TextType.TEXT)
+        # This should raise an exception
+        with self.assertRaises(ValueError):
+            split_nodes_delimiter([node], "**", TextType.BOLD)
+
+    def test_split_nodes_delimiter_non_text_node(self):
+        node = TextNode("**already bold**", TextType.BOLD)
+        nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
+        # Should return unchanged
+        self.assertEqual(len(nodes), 1)
+        self.assertEqual(nodes[0].text, "**already bold**")

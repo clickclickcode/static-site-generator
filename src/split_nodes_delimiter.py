@@ -15,7 +15,7 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
             continue
         
         if second_delimiter == -1:
-            raise Exception('That is invalid markdown syntax')
+            raise ValueError('That is invalid markdown syntax')
         
         before_delimiter = node.text[:first_delimiter]
         between_delimiters = node.text[first_delimiter + len(delimiter):second_delimiter]
